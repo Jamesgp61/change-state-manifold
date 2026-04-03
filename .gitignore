@@ -1,0 +1,63 @@
+# Yosys synthesis outputs
+*_Implmnt/
+synthesis/
+synth-*/
+
+# FPGA bitstreams and programming files
+*.bit
+*.bin
+*.asc
+*.json
+*.blif
+*.edif
+
+# nextpnr outputs
+*.place
+*.route
+
+# SymbiYosys working directories
+*/proofs/
+**/proofs/
+*.sby.d/
+
+# Icarus Verilog simulation outputs
+*.vvp
+*.lxt
+*.vcd
+*.fst
+
+# GTKWave save files
+*.gtkw
+
+# Lattice Diamond / Radiant project files
+*.ldf
+*.lpf
+*.xcf
+*_pnr/
+impl*/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/settings.json
+.vscode/launch.json
+
+# Environment and secrets
+.env
+*.env
+config/secrets.*
+config/local.*
+
+# Casting data — raw unprocessed sessions
+data/casting_corpus/raw/
+data/casting_corpus/sessions/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Node modules if any web tooling is added
+node_modules/
