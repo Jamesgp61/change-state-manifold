@@ -229,7 +229,7 @@ The CSM draws on and extends:
 ```
 Putnam, J. (2026). Change State Manifold: A Nodal Memory Architecture
 for AI Coherence, Relational Processing, and Aligned Superintelligence.
-https://github.com/[username]/change-state-manifold
+https://github.com/Jamesgp61/change-state-manifold
 ```
 
 ---
