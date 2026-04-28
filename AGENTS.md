@@ -39,6 +39,7 @@ Direct commands when no Makefile exists:
   reg sig_prev;
   always @(posedge clk) sig_prev <= sig;
   ```
+- **Submodule wires**: always declare all connection wires explicitly (with width) before the instantiation. Implicit net declarations cause Verilator warnings and can mask connection errors.
 
 ## Toolchain Quirks
 - Verilator lints **design modules only** — do not pass testbench files to `--lint-only` (testbenches use constructs Verilator rejects).
