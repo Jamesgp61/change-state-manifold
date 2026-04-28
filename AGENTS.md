@@ -70,7 +70,7 @@ progress.md           — module state machine and verification log
 
 `progress.md` is the append-only project log. Update it when a module advances state: `DESIGNED → LINTED → SIMULATED → HARDWARE_TESTED`. Record simulation results and known gotchas there.
 
-No git repository is initialised. There is no README, no CI, and no `.gitignore`.
+Remote: `https://github.com/Jamesgp61/change-state-manifold.git` (branch `main`). A `.gitignore` is present covering `*.vvp`, `*.vcd`, `*.fst`, bitstreams, and OS/editor files.
 
 ## Hardware Notes
 - GPIO access on Pi 5: `/dev/gpiomem` — no `sudo` required.
