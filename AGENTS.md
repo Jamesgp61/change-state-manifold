@@ -21,8 +21,10 @@ make lint-two   # verilator --lint-only -Wall hex_transition.v hex_two_node.v  (
 make sim-two    # compile + run hex_two_node simulation (includes hex_transition.v)
 make lint-lut   # verilator --lint-only -Wall hex_lut.v
 make sim-lut    # compile + run hex_lut simulation
-make lint-all   # all four lint targets in sequence
-make sim-all    # all four sim targets in sequence (default: make all)
+make lint-csm   # verilator --lint-only -Wall hex_transition.v hex_two_node.v hex_lut.v hex_csm_node.v
+make sim-csm    # compile + run hex_csm_node simulation (all four source files required)
+make lint-all   # all five lint targets in sequence
+make sim-all    # all five sim targets in sequence (default: make all)
 make clean      # remove ds_sim.vvp
 ```
 All sim targets write to the **shared** `ds_sim.vvp` — each run overwrites it.
@@ -47,6 +49,7 @@ Direct commands when no Makefile exists:
 - Verilator lints **design modules only** — do not pass testbench files to `--lint-only` (testbenches use constructs Verilator rejects).
 - `lint-two` must pass **both** `hex_transition.v hex_two_node.v` — `hex_two_node` instantiates `hex_transition`, so Verilator needs both files to resolve the module reference.
 - `sim-two` must also include `hex_transition.v` on the iverilog command line for the same reason.
+- `lint-csm` and `sim-csm` require all four source files (`hex_transition.v hex_two_node.v hex_lut.v hex_csm_node.v`) — `hex_csm_node` is a structural wrapper instantiating all three lower modules.
 - Icarus Verilog requires `-g2001` for Verilog-2001 files; omitting it causes parse errors on some syntax.
 - Simulation output is hardcoded as `ds_sim.vvp` in the Makefile.
 - Verilator binary output is always `./obj_dir/V<top>`.
@@ -67,11 +70,15 @@ hex_two_node.v        — two registered hexagram nodes; instantiates hex_transi
 hex_two_node_tb.v     — reset + 3 triggered transitions (negedge-driven stimulus)
 hex_lut.v             — combinational 64-entry LUT: 6-bit binary pattern → hexagram number (1–64)
 hex_lut_tb.v          — 15 checks (111111→1, 000000→2, 101010→64 + 12 spot-checks)
-Makefile              — lint/sim/clean; per-module targets: lint-hex, sim-hex, lint-two, sim-two, lint-lut, sim-lut
+hex_csm_node.v        — structural top: hex_two_node + 2× hex_lut; exposes raw nodes + hex numbers
+hex_csm_node_tb.v     — 5 tests: reset, 3 transitions, mid-sequence reset
+Makefile              — lint/sim/clean; per-module targets: lint-hex, sim-hex, lint-two, sim-two, lint-lut, sim-lut, lint-csm, sim-csm
 progress.md           — module state machine and verification log
 ```
 
 `hex_two_node` reset values: `node_a=6'b111111` (pure Yang), `node_b=6'b000000` (pure Yin). The `trigger` input must be held high for exactly one clock cycle to apply a transition; it is not self-clearing.
+
+`hex_csm_node` is a purely structural wrapper (no `always` blocks) — it connects `hex_two_node` outputs directly to two `hex_lut` inputs. `hex_num_a`/`hex_num_b` resolve combinationally within the same cycle that a transition is registered.
 
 `progress.md` is the append-only project log. Update it when a module advances state: `DESIGNED → LINTED → SIMULATED → HARDWARE_TESTED`. Record simulation results and known gotchas there.
 

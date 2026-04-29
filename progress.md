@@ -18,6 +18,7 @@
 | hex_transition | `hex_transition.v` | SIMULATED | 2026-04-27 |
 | hex_two_node | `hex_two_node.v` | SIMULATED | 2026-04-27 |
 | hex_lut | `hex_lut.v` | SIMULATED | 2026-04-28 |
+| hex_csm_node | `hex_csm_node.v` | SIMULATED | 2026-04-28 |
 
 ---
 
@@ -152,6 +153,43 @@ causes iverilog to race and present the deasserted value to the DUT.
 
 ---
 
+### hex_csm_node
+
+- **File**: `hex_csm_node.v`
+- **Testbench**: `hex_csm_node_tb.v`
+- **State**: `SIMULATED`
+- **Dependencies**: instantiates `hex_two_node` (x1) and `hex_lut` (x2) — must be compiled with all three dependency files
+- **Interface**:
+  - `clk` — input clock
+  - `rst_n` — active-low synchronous reset
+  - `line_pos[2:0]` — bit position to flip (passed to hex_two_node)
+  - `trigger` — hold high for one cycle to apply transition
+  - `node_a[5:0]` — raw 6-bit pattern, pass-through from hex_two_node
+  - `node_b[5:0]` — raw 6-bit pattern, pass-through from hex_two_node
+  - `hex_num_a[6:0]` — hexagram number 1–64 for node A
+  - `hex_num_b[6:0]` — hexagram number 1–64 for node B
+- **Architecture**: purely structural — no `always` blocks, no logic. Wires hex_two_node outputs directly into hex_lut inputs. hex_num_a/hex_num_b are valid within the same clock cycle that a transition is registered.
+- **Makefile targets**: `make lint-csm`, `make sim-csm`
+- **Toolchain note**: `iverilog` compile requires all four source files: `hex_transition.v hex_two_node.v hex_lut.v hex_csm_node.v`; lint passes all four to Verilator.
+
+**Verification log**:
+
+```
+2026-04-28  LINTED      verilator 5.032 — zero warnings (5 modules resolved)
+2026-04-28  SIMULATED   iverilog -g2001 + vvp
+                        [1] Reset:         node_a=111111(1)  node_b=000000(2)  ✓
+                        [2] Flip bit 0:    node_a=111110(44) node_b=000001(24) ✓
+                        [3] Flip bit 2:    node_a=111010(6)  node_b=000101(36) ✓
+                        [4] Flip bit 5:    node_a=011010(47) node_b=100101(22) ✓
+                        [5] Mid-seq reset: node_a=111111(1)  node_b=000000(2)  ✓
+                        ALL TESTS PASSED (0 errors)
+```
+
+**Pending**:
+- [ ] Hardware test on Pi 5
+
+---
+
 ## Task Log
 
 <!-- Append tasks here as they are completed. Format: DATE | ACTION | OUTCOME -->
@@ -178,6 +216,11 @@ causes iverilog to race and present the deasserted value to the DUT.
 | 2026-04-28 | Update `Makefile` | Done — added `lint-lut`, `sim-lut`; updated `lint-all`, `sim-all` |
 | 2026-04-28 | Lint `hex_lut.v` | PASS — zero Verilator warnings |
 | 2026-04-28 | Simulate `hex_lut` | PASS — 15/15 checks passed, `$finish` clean |
+| 2026-04-28 | Create `hex_csm_node.v` | Done — purely structural wrapper: hex_two_node + 2× hex_lut, no logic |
+| 2026-04-28 | Create `hex_csm_node_tb.v` | Done — 5 tests: reset, 3 transitions, mid-sequence reset |
+| 2026-04-28 | Update `Makefile` | Done — added `lint-csm`, `sim-csm`; updated `lint-all`, `sim-all` |
+| 2026-04-28 | Lint `hex_csm_node.v` | PASS — zero Verilator warnings (5 modules) |
+| 2026-04-28 | Simulate `hex_csm_node` | PASS — 5/5 tests passed, `$finish` clean |
 
 ---
 
