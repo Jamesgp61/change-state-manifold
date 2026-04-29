@@ -4,7 +4,7 @@
 
 SIM_OUT = ds_sim.vvp
 
-.PHONY: all lint sim lint-hex sim-hex lint-two sim-two lint-all sim-all clean
+.PHONY: all lint sim lint-hex sim-hex lint-two sim-two lint-lut sim-lut lint-all sim-all clean
 
 all: sim-all
 
@@ -32,10 +32,18 @@ sim-two: hex_transition.v hex_two_node.v hex_two_node_tb.v
 	iverilog -g2001 -o $(SIM_OUT) hex_transition.v hex_two_node.v hex_two_node_tb.v
 	vvp $(SIM_OUT)
 
-# ── all modules ──────────────────────────────────────────────────────
-lint-all: lint lint-hex lint-two
+# ── hex_lut ──────────────────────────────────────────────────────────
+lint-lut:
+	verilator --lint-only -Wall hex_lut.v
 
-sim-all: sim sim-hex sim-two
+sim-lut: hex_lut.v hex_lut_tb.v
+	iverilog -g2001 -o $(SIM_OUT) hex_lut.v hex_lut_tb.v
+	vvp $(SIM_OUT)
+
+# ── all modules ──────────────────────────────────────────────────────
+lint-all: lint lint-hex lint-two lint-lut
+
+sim-all: sim sim-hex sim-two sim-lut
 
 # ── housekeeping ─────────────────────────────────────────────────────
 clean:

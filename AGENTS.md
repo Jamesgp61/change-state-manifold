@@ -19,8 +19,10 @@ make lint-hex   # verilator --lint-only -Wall hex_transition.v
 make sim-hex    # compile + run hex_transition simulation
 make lint-two   # verilator --lint-only -Wall hex_transition.v hex_two_node.v  (BOTH required)
 make sim-two    # compile + run hex_two_node simulation (includes hex_transition.v)
-make lint-all   # all three lint targets in sequence
-make sim-all    # all three sim targets in sequence (default: make all)
+make lint-lut   # verilator --lint-only -Wall hex_lut.v
+make sim-lut    # compile + run hex_lut simulation
+make lint-all   # all four lint targets in sequence
+make sim-all    # all four sim targets in sequence (default: make all)
 make clean      # remove ds_sim.vvp
 ```
 All sim targets write to the **shared** `ds_sim.vvp` — each run overwrites it.
@@ -63,7 +65,9 @@ hex_transition.v      — combinational bit-flip via XOR (no clock)
 hex_transition_tb.v   — tests all 6 line positions against 101010
 hex_two_node.v        — two registered hexagram nodes; instantiates hex_transition x2
 hex_two_node_tb.v     — reset + 3 triggered transitions (negedge-driven stimulus)
-Makefile              — lint/sim/clean; per-module targets: lint-hex, sim-hex, lint-two, sim-two
+hex_lut.v             — combinational 64-entry LUT: 6-bit binary pattern → hexagram number (1–64)
+hex_lut_tb.v          — 15 checks (111111→1, 000000→2, 101010→64 + 12 spot-checks)
+Makefile              — lint/sim/clean; per-module targets: lint-hex, sim-hex, lint-two, sim-two, lint-lut, sim-lut
 progress.md           — module state machine and verification log
 ```
 

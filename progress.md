@@ -17,6 +17,7 @@
 | led_blink | `led_blink.v` | SIMULATED | 2026-04-27 |
 | hex_transition | `hex_transition.v` | SIMULATED | 2026-04-27 |
 | hex_two_node | `hex_two_node.v` | SIMULATED | 2026-04-27 |
+| hex_lut | `hex_lut.v` | SIMULATED | 2026-04-28 |
 
 ---
 
@@ -124,6 +125,33 @@ causes iverilog to race and present the deasserted value to the DUT.
 
 ---
 
+### hex_lut
+
+- **File**: `hex_lut.v`
+- **Testbench**: `hex_lut_tb.v`
+- **State**: `SIMULATED`
+- **Interface**:
+  - `hex_binary[5:0]` — 6-bit line pattern (bit 5 = top line, bit 0 = bottom line)
+  - `hex_number[6:0]` — hexagram number 1–64; `7'd0` for invalid input
+- **Type**: purely combinational (`always @(*)`, no clock)
+- **Source**: inverse of `HEXAGRAM_TO_BINARY_MAP` from `services.py`
+- **Makefile targets**: `make lint-lut`, `make sim-lut`
+
+**Verification log**:
+
+```
+2026-04-28  LINTED      verilator 5.032 — zero warnings
+2026-04-28  SIMULATED   iverilog -g2001 + vvp
+                        15 checks: required (111111→1, 000000→2, 101010→64)
+                        + spot-checks hex 3,10,17,24,28,32,37,44,51,57,62,63
+                        15/15 PASS ✓
+```
+
+**Pending**:
+- [ ] Hardware test on Pi 5
+
+---
+
 ## Task Log
 
 <!-- Append tasks here as they are completed. Format: DATE | ACTION | OUTCOME -->
@@ -145,6 +173,11 @@ causes iverilog to race and present the deasserted value to the DUT.
 | 2026-04-27 | Update `Makefile` | Done — added `lint-two`, `sim-two`; updated `lint-all`, `sim-all` |
 | 2026-04-27 | Lint `hex_two_node.v` | PASS — zero Verilator warnings |
 | 2026-04-27 | Simulate `hex_two_node` | PASS — all 3 transitions correct, `$finish` clean |
+| 2026-04-28 | Create `hex_lut.v` | Done — 64-entry combinational case LUT, 7-bit output, default 0 |
+| 2026-04-28 | Create `hex_lut_tb.v` | Done — 15 checks (3 required + 12 spot-checks), self-checking |
+| 2026-04-28 | Update `Makefile` | Done — added `lint-lut`, `sim-lut`; updated `lint-all`, `sim-all` |
+| 2026-04-28 | Lint `hex_lut.v` | PASS — zero Verilator warnings |
+| 2026-04-28 | Simulate `hex_lut` | PASS — 15/15 checks passed, `$finish` clean |
 
 ---
 
